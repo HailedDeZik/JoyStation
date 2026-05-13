@@ -90,7 +90,9 @@
   }
 
   function renderProducts() {
+    window.adminProducts = [];
     window.getProducts().then(products => {
+      window.adminProducts = products;
       const productList = document.getElementById("productList");
       productList.innerHTML = "";
 
@@ -101,11 +103,60 @@
           <h4>${product.title}</h4>
           <p>${product.price} ₽</p>
           <div class="admin-actions">
+            <button onclick='editProduct(${product.id})'>Изменить</button>
             <button onclick='removeProduct(${product.id})'>Удалить</button>
           </div>
         `;
         productList.appendChild(card);
       });
+    });
+  }
+
+  function editProduct(productId) {
+    const product = window.adminProducts.find(p => p.id === productId);
+    if (!product) {
+      alert('Товар не найден');
+      return;
+    }
+
+    const title = prompt('Название игры:', product.title);
+    if (!title) return;
+
+    const price = Number(prompt('Цена, ₽:', product.price));
+    if (!price || price <= 0) {
+      alert('Введите корректную цену');
+      return;
+    }
+
+    const image = prompt('URL картинки:', product.image);
+    if (!image) {
+      alert('Введите URL картинки');
+      return;
+    }
+
+    const token = getToken();
+    if (!token) return;
+
+    fetch(`http://localhost:3000/api/products/${productId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ title, price, image })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.id) {
+        alert('Товар обновлён!');
+        renderProducts();
+      } else {
+        alert(data.message || 'Ошибка обновления товара');
+      }
+    })
+    .catch(error => {
+      console.error('Ошибка:', error);
+      alert('Ошибка подключения к серверу');
     });
   }
 
