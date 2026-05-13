@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Регистрация</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header>
+  <h1>JoyStation</h1>
+  <nav class="nav-links">
+    <a href="index.html">Главная</a>
+    <a href="catalog.html">Каталог</a>
+    <a href="cart.html">Корзина</a>
+  </nav>
+  <div class="header-actions" id="userInfo">
+    <span id="userName"></span>
+    <a href="admin.html" id="adminLink" style="display:none;">Админка</a>
+    <a href="#" id="logoutBtn" onclick="handleLogout(event)" style="display:none;">Выход</a>
+    <a href="login.html" id="loginBtn" style="display:none;">Вход</a>
+  </div>
+</header>
+
+<div class="auth-container">
+  <div class="auth-form">
+    <h2>Регистрация</h2>
+    
+    <input type="text" id="registerName" placeholder="Никнейм" required>
+    <input type="email" id="registerEmail" placeholder="Email" required>
+    <input type="password" id="registerPassword" placeholder="Пароль" required>
+    <input type="password" id="registerPasswordConfirm" placeholder="Подтвердите пароль" required>
+    
+    <button onclick="handleRegister()">Зарегистрироваться</button>
+    
+    <p>Уже есть аккаунт? <a href="login.html">Войдите</a></p>
+  </div>
+</div>
+
+<script src="../js/script.js"></script>
+<script>
+  function handleRegister() {
+    const name = document.getElementById("registerName").value;
+    const email = document.getElementById("registerEmail").value;
+    const password = document.getElementById("registerPassword").value;
+    const confirmPassword = document.getElementById("registerPasswordConfirm").value;
+
+    if (!name || !email || !password || !confirmPassword) {
+      alert("Заполните все поля!");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Пароли не совпадают!");
+      return;
+    }
+
+    if (password.length < 6) {
+      alert("Пароль должен быть не менее 6 символов!");
+      return;
+    }
+
+    const nicknameRegexp = /^[A-Za-zА-Яа-яЁё0-9_]{3,20}$/;
+    if (!nicknameRegexp.test(name)) {
+      alert("Никнейм может содержать только буквы, цифры и подчеркивания. Минимум 3 символа.");
+      return;
+    }
+
+    fetch('http://localhost:3000/api/auth/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name, email, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.token) {
+        setToken(data.token);
+        localStorage.setItem("currentUser", JSON.stringify(data.user));
+        alert("Вы успешно зарегистрировались!");
+        window.location.href = "index.html";
+      } else {
+        alert(data.message || "Ошибка регистрации");
+      }
+    })
+    .catch(error => {
+      console.error('Ошибка:', error);
+      alert("Ошибка подключения к серверу");
+    });
+  }
+
+  // Если уже авторизован, перенаправить на главную
+  if (getToken()) {
+    window.location.href = "index.html";
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Каталог</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header>
+  <h1>JoyStation</h1>
+  <nav class="nav-links">
+    <a href="index.html">Главная</a>
+    <a href="catalog.html">Каталог</a>
+    <a href="cart.html">Корзина</a>
+  </nav>
+  <div class="header-actions" id="userInfo">
+    <span id="userName"></span>
+    <a href="admin.html" id="adminLink" style="display:none;">Админка</a>
+    <a href="#" id="logoutBtn" onclick="handleLogout(event)" style="display:none;">Выход</a>
+    <a href="login.html" id="loginBtn" style="display:none;">Вход</a>
+  </div>
+</header>
+
+<section class="section-title">Наш <span>Каталог</span></section>
+<div class="products" id="products"></div>
+
+<script src="../js/data.js"></script>
+<script src="../js/script.js"></script>
+
+<script>
+  const container = document.getElementById("products");
+
+  // Загрузка продуктов через API
+  fetch('http://localhost:3000/api/products')
+    .then(response => response.json())
+    .then(products => {
+      container.innerHTML = ""; // Очищаем контейнер
+
+      products.forEach(p => {
+        container.innerHTML += `
+          <div class="card">
+            <img src="${p.image}" width="100%">
+            <h3>${p.title}</h3>
+            <p>${p.price} ₽</p>
+            <button onclick="addToCart(${p.id})">В корзину</button>
+          </div>
+        `;
+      });
+    })
+    .catch(error => {
+      console.error('Ошибка загрузки продуктов:', error);
+      container.innerHTML = "<p>Ошибка загрузки продуктов. Проверьте подключение к серверу.</p>";
+    });
+</script>
+
+</body>
+</html>

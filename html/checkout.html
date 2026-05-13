@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Оформление заказа</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header>
+  <h1>JoyStation</h1>
+  <nav class="nav-links">
+    <a href="index.html">Главная</a>
+    <a href="catalog.html">Каталог</a>
+    <a href="cart.html">Корзина</a>
+  </nav>
+  <div class="header-actions" id="userInfo">
+    <span id="userName"></span>
+    <a href="admin.html" id="adminLink" style="display:none;">Админка</a>
+    <a href="#" id="logoutBtn" onclick="handleLogout(event)" style="display:none;">Выход</a>
+    <a href="login.html" id="loginBtn" style="display:none;">Вход</a>
+  </div>
+</header>
+
+<div class="container">
+  <h2 class="page-title"><span>Оформление</span> заказа</h2>
+
+  <div id="checkoutContent">
+    <div id="cartSummary" style="margin-bottom: 30px;"></div>
+    
+    <div style="background: rgba(139, 240, 255, 0.1); padding: 20px; border-radius: 12px; margin-bottom: 30px;">
+      <h3 style="color: #8bf0ff; margin-top: 0;">💳 Способ оплаты:</h3>
+      <label style="display: inline-flex; align-items: center; cursor: pointer; width: auto;">
+        <input type="radio" name="paymentMethod" value="card" checked style="margin-right: 10px; cursor: pointer; flex-shrink: 0;">
+        <span>Карта (ФЕЙК ОПЛАТА для демонстрации)</span>
+      </label>
+    </div>
+
+    <div style="background: rgba(234, 0, 217, 0.1); padding: 15px; border-radius: 12px; margin-bottom: 30px; border-left: 3px solid #ea00d9;">
+      <p style="margin: 0; color: #ea00d9; font-weight: bold;">⚠️ Это тестовая система. Реальный платёж не произойдёт.</p>
+    </div>
+
+    <button onclick="processCheckout()" style="width: 100%; padding: 15px; font-size: 16px; font-weight: bold;">Оформить и получить ключ</button>
+  </div>
+
+  <div id="successMessage" style="display: none; text-align: center;">
+    <h2 style="color: #0abdc6;">✅ Заказ успешно оформлен!</h2>
+    <div id="keysDisplay" style="margin: 20px 0;"></div>
+    <p style="color: #8bf0ff;">Ключи будут отправлены на вашу почту</p>
+    <a href="index.html" class="glow-button" style="display: inline-block; margin-top: 20px;">На главную</a>
+  </div>
+</div>
+
+<script src="../js/script.js"></script>
+<script>
+  // Показываем информацию пользователя и корзину при загрузке
+  document.addEventListener('DOMContentLoaded', () => {
+    updateUserInfo();
+    displayCartOnCheckout();
+  });
+</script>
+
+</body>
+</html>

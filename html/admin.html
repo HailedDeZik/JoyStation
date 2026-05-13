@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Админ панель</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<header>
+  <h1>JoyStation</h1>
+  <nav class="nav-links">
+    <a href="index.html">Главная</a>
+    <a href="catalog.html">Каталог</a>
+    <a href="cart.html">Корзина</a>
+  </nav>
+  <div class="header-actions" id="userInfo">
+    <span id="userName"></span>
+    <a href="admin.html" id="adminLink" style="display:none;">Админка</a>
+    <a href="#" id="logoutBtn" onclick="handleLogout(event)" style="display:none;">Выход</a>
+    <a href="login.html" id="loginBtn" style="display:none;">Вход</a>
+  </div>
+</header>
+
+<div class="container admin-panel">
+  <h2 class="page-title"><span>Админ</span> панель</h2>
+  <p class="hero-text">Управляйте пользователями и товарами прямо из панели администрирования.</p>
+
+  <div class="admin-grid">
+    <section class="admin-card">
+      <h3>Пользователи</h3>
+      <div id="userList"></div>
+    </section>
+
+    <section class="admin-card">
+      <h3>Добавить новый товар</h3>
+      <div class="admin-form">
+        <input type="text" id="newProductTitle" placeholder="Название игры" />
+        <input type="number" id="newProductPrice" placeholder="Цена, ₽" />
+        <input type="url" id="newProductImage" placeholder="URL картинки" />
+        <button onclick="addProduct()">Добавить товар</button>
+      </div>
+      <div id="productList"></div>
+    </section>
+  </div>
+</div>
+
+<script src="../js/script.js"></script>
+<script>
+  function requireAdmin() {
+    const currentUser = getCurrentUser();
+    if (!currentUser || !currentUser.isAdmin) {
+      alert("Доступ запрещён. Только администратор.");
+      window.location.href = "index.html";
+    }
+  }
+
+  function renderUsers() {
+    const token = getToken();
+    if (!token) return;
+
+    fetch('http://localhost:3000/api/users', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => response.json())
+    .then(users => {
+      const userList = document.getElementById("userList");
+      userList.innerHTML = "";
+
+      users.forEach(user => {
+        const card = document.createElement("div");
+        card.className = "card admin-mini-card";
+        card.innerHTML = `
+          <h4>${user.name}</h4>
+          <p>${user.email}</p>
+          <p>Роль: ${user.isAdmin ? "Админ" : "Пользователь"}</p>
+          <div class="admin-actions">
+            ${user.isAdmin ? "" : `<button onclick='promoteUser(${user.id})'>Сделать админом</button>`}
+            ${user.id !== 0 ? `<button class='danger' onclick='deleteUser(${user.id})'>Удалить</button>` : ""}
+          </div>
+        `;
+        userList.appendChild(card);
+      });
+    })
+    .catch(error => {
+      console.error('Ошибка загрузки пользователей:', error);
+      alert("Ошибка загрузки пользователей");
+    });
+  }
+
+  function renderProducts() {
+    window.getProducts().then(products => {
+      const productList = document.getElementById("productList");
+      productList.innerHTML = "";
+
+      products.forEach(product => {
+        const card = document.createElement("div");
+        card.className = "card admin-mini-card";
+        card.innerHTML = `
+          <h4>${product.title}</h4>
+          <p>${product.price} ₽</p>
+          <div class="admin-actions">
+            <button onclick='removeProduct(${product.id})'>Удалить</button>
+          </div>
+        `;
+        productList.appendChild(card);
+      });
+    });
+  }
+
+  function addProduct() {
+    const title = document.getElementById("newProductTitle").value.trim();
+    const price = Number(document.getElementById("newProductPrice").value);
+    const image = document.getElementById("newProductImage").value.trim();
+
+    if (!title || !price || !image) {
+      alert("Заполните все поля для товара.");
+      return;
+    }
+
+    const token = getToken();
+    if (!token) return;
+
+    fetch('http://localhost:3000/api/products', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ title, price, image })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.id) {
+        document.getElementById("newProductTitle").value = "";
+        document.getElementById("newProductPrice").value = "";
+        document.getElementById("newProductImage").value = "";
+        alert("Товар добавлен!");
+        renderProducts();
+      } else {
+        alert(data.message || "Ошибка добавления товара");
+      }
+    })
+    .catch(error => {
+      console.error('Ошибка:', error);
+      alert("Ошибка подключения к серверу");
+    });
+  }
+
+  function removeProduct(id) {
+    const token = getToken();
+    if (!token) return;
+
+    fetch(`http://localhost:3000/api/products/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.message === 'Товар удалён') {
+        renderProducts();
+        alert("Товар удалён!");
+      } else {
+        alert(data.message || "Ошибка удаления товара");
+      }
+    })
+    .catch(error => {
+      console.error('Ошибка:', error);
+      alert("Ошибка подключения к серверу");
+    });
+  }
+
+      function promoteUser(userId) {
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        fetch(`http://localhost:3000/api/users/${userId}/admin`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ isAdmin: true })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            alert(data.message);
+            renderUsers();
+          } else {
+            alert('Ошибка: ' + (data.message || 'неизвестная ошибка'));
+          }
+        })
+        .catch(error => {
+          console.error('Ошибка:', error);
+          alert('Ошибка подключения к серверу');
+        });
+      }
+
+      function deleteUser(userId) {
+        if (!confirm('Вы уверены? Этого пользователя нельзя будет восстановить.')) {
+          return;
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) return;
+
+        fetch(`http://localhost:3000/api/users/${userId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message === 'Пользователь удалён') {
+            alert('Пользователь успешно удалён!');
+            renderUsers();
+          } else {
+            alert(data.message || 'Ошибка удаления пользователя');
+          }
+        })
+        .catch(error => {
+          console.error('Ошибка:', error);
+          alert('Ошибка подключения к серверу');
+        });
+      }
+
+  requireAdmin();
+  renderUsers();
+  renderProducts();
+</script>
+
+</body>
+</html>

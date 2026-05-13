@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>JoyStation</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div id="loader">
+  <div class="loader-content">
+    
+    <div class="spinner"></div>
+
+    <h2>JoyStation</h2>
+
+    <div class="progress">
+      <div id="progress-bar"></div>
+    </div>
+
+  </div>
+</div>
+
+<header>
+  <h1>JoyStation</h1>
+  <nav class="nav-links">
+    <a href="index.html">Главная</a>
+    <a href="catalog.html">Каталог</a>
+    <a href="cart.html">Корзина</a>
+  </nav>
+  <div class="header-actions" id="userInfo">
+    <span id="userName"></span>
+    <a href="admin.html" id="adminLink" style="display:none;">Админка</a>
+    <a href="#" id="logoutBtn" onclick="handleLogout(event)" style="display:none;">Выход</a>
+    <a href="login.html" id="loginBtn" style="display:none;">Вход</a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <h2 class="hero-title">Добро пожаловать в <span>JoyStation</span></h2>
+    <p class="hero-text">Игровой магазин в неоновом стиле с красивыми товарами, быстрой корзиной и продуманной авторизацией.</p>
+    <div class="hero-actions">
+      <a href="catalog.html" class="glow-button">Перейти в каталог</a>
+      <a href="login.html" class="secondary-button">Войти в аккаунт</a>
+    </div>
+  </div>
+</div>
+
+<section class="about-section">
+  <div class="about-grid">
+    <div class="about-card">
+      <span class="section-label">О нашем магазине</span>
+      <h3>JoyStation — это игровой бутик нового поколения</h3>
+      <p>Мы тщательно отбираем самые крутые игры, создаём удобный интерфейс и заботимся о каждом клиенте. С нами покупки превращаются в стильный и быстрый процесс.</p>
+      <ul>
+        <li>Яркий и понятный каталог</li>
+        <li>Надёжная авторизация и защита данных</li>
+        <li>Удобная корзина и быстрая оплата</li>
+      </ul>
+    </div>
+    <div class="about-card about-card--accent">
+      <span class="section-label">Почему выбирают нас</span>
+      <h3>У нас вкусный стиль и честный сервис</h3>
+      <p>Мы предлагаем не только игры, но и атмосферу: неоновый дизайн, быстрый отклик и заботу о каждом заказе.</p>
+      <ul>
+        <li>Эксклюзивные подборки</li>
+        <li>Персональные предложения</li>
+        <li>Постоянные обновления каталога</li>
+      </ul>
+    </div>
+  </div>
+  <div class="contact-panel">
+    <div>
+      <h3>Контактная информация</h3>
+      <p>E-mail: <a href="mailto:support@joystation.ru">support@joystation.ru</a></p>
+      <p>Телефон: <a href="tel:+71234567890">+7 925 873-78-89</a></p>
+    </div>
+    <div>
+      <h3>Мы в социальных сетях</h3>
+      <p><a href="https://vk.com/club238447843">VK</a> · <a href="https://t.me/+TY4K5EM173IzNjhi">Telegram</a></p>
+    </div>
+  </div>
+</section>
+
+<script src="../js/data.js"></script>
+<script src="../js/script.js"></script>
+</body>
+</html>
