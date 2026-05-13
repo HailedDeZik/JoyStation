@@ -149,6 +149,29 @@ app.delete('/api/products/:id', authenticateToken, requireAdmin, (req, res) => {
   });
 });
 
+app.put('/api/products/:id', authenticateToken, requireAdmin, (req, res) => {
+  const id = Number(req.params.id);
+  const { title, price, image } = req.body;
+
+  if (!title || !price || !image) {
+    return res.status(400).json({ message: 'Заполните все поля' });
+  }
+
+  db.run(
+    'UPDATE products SET title = ?, price = ?, image = ? WHERE id = ?',
+    [title, price, image, id],
+    function (err) {
+      if (err) {
+        return res.status(500).json({ message: 'Ошибка базы данных' });
+      }
+      if (this.changes === 0) {
+        return res.status(404).json({ message: 'Товар не найден' });
+      }
+      res.json({ id, title, price, image });
+    }
+  );
+});
+
 // Удаление пользователя
 app.delete('/api/users/:id', authenticateToken, requireAdmin, (req, res) => {
   const userId = Number(req.params.id);
