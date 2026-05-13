@@ -1,0 +1,17 @@
+{
+  "name": "joystation-backend",
+  "version": "1.0.0",
+  "description": "Backend for JoyStation diploma project",
+  "main": "js/server.js",
+  "scripts": {
+    "start": "node js/server.js",
+    "dev": "nodemon js/server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.1",
+    "sqlite3": "^5.1.6"
+  }
+}
